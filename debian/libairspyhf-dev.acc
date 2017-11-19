@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<descriptor>
+
+<headers>
+debian/libairspyhf-dev/usr/include/
+</headers>
+
+<libs>
+debian/libairspyhf0/usr/lib/
+</libs>
+
+</descriptor>

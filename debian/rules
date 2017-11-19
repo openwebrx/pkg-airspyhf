@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+export DEB_HOST_MULTIARCH
+
+%:
+	dh $@ --with acc
+
+override_dh_acc:
+	- dh_acc
+	- cat debian/libairspyhf-dev/usr/lib/x86_64-linux-gnu/dh-acc/libairspyhf-dev_*_report.html
+
+override_dh_auto_configure: debian/libairspy0.udev
+	dh_auto_configure $@ -- -DLIB_SUFFIX=/$(DEB_HOST_MULTIARCH)
+
+debian/libairspy0.udev: tools/52-airspyhf.rules
+	cp -p tools/52-airspyhf.rules debian/libairspyhf0.udev
