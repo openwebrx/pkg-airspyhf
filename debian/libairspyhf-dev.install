@@ -2,3 +2,4 @@ usr/include/*
 usr/lib/*/lib*.a
 usr/lib/*/lib*.so
 usr/lib/*/pkgconfig/
+debian/com.airspy.airspy-hf-plus.metainfo.xml usr/share/metainfo

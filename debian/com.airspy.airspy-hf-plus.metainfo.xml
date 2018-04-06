@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+  <id>com.airspy.airspy-hf-plus</id>
+  <metadata_license>BSD</metadata_license>
+  <name>airspyhf</name>
+  <summary>Control of Airspy HF+ radio receiver</summary>
+  <description>
+    <p>
+      Airspy HF+ is a Radio that can receive
+      9 kHZ to 31 MHz and 60 MHz to 260 MHz.
+      It is a High Speed USB device powered by the USB bus.
+    </p>
+  </description>
+  <provides>
+    <modalias>usb:v03EBp800Cd*</modalias>
+  </provides>
+</component>

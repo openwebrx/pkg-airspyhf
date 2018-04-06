@@ -1,3 +1,13 @@
+airspyhf (1.1.5-1) unstable; urgency=medium
+
+  * New upstream release
+    Add support for setting AGC, AGC_THRESHOLD, ATT, LNA
+  * update to 1.1.5-7-g3f05240
+  * bump soversion due to ABI and API changes
+  * copy FindUSB1.cmake from airspy-host (Closes: #882453)
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 05 Apr 2018 20:18:17 -0400
+
 airspyhf (1.0-1) unstable; urgency=medium
 
   * New release (Closes: #882184)

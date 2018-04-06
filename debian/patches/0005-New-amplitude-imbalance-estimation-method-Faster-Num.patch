@@ -1,0 +1,303 @@
+From 87721ea394bd2ba869d540c980d1323ea6f5bbef Mon Sep 17 00:00:00 2001
+From: prog <youssef@airspy.com>
+Date: Sun, 8 Jul 2018 15:30:15 +0200
+Subject: [PATCH 5/7] New amplitude imbalance estimation method: Faster,
+ Numerically stable, More accurate.
+
+---
+ libairspyhf/src/airspyhf.h   |   6 +--
+ libairspyhf/src/iqbalancer.c | 116 +++++++++++++++++++++----------------------
+ libairspyhf/src/iqbalancer.h |  46 ++++++++---------
+ 3 files changed, 81 insertions(+), 87 deletions(-)
+
+diff --git a/libairspyhf/src/airspyhf.h b/libairspyhf/src/airspyhf.h
+index 6447223..bb1a0d1 100644
+--- a/libairspyhf/src/airspyhf.h
++++ b/libairspyhf/src/airspyhf.h
+@@ -28,10 +28,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
+ 
+ #include <stdint.h>
+ 
+-#define AIRSPYHF_VERSION "1.1.7"
++#define AIRSPYHF_VERSION "1.2.0"
+ #define AIRSPYHF_VER_MAJOR 1
+-#define AIRSPYHF_VER_MINOR 1
+-#define AIRSPYHF_VER_REVISION 7
++#define AIRSPYHF_VER_MINOR 2
++#define AIRSPYHF_VER_REVISION 0
+ 
+ #define AIRSPYHF_ENDPOINT_IN (1)
+ 
+diff --git a/libairspyhf/src/iqbalancer.c b/libairspyhf/src/iqbalancer.c
+index 3ed643b..8fc8f7d 100644
+--- a/libairspyhf/src/iqbalancer.c
++++ b/libairspyhf/src/iqbalancer.c
+@@ -163,7 +163,7 @@ static void cancel_dc(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq,
+ 	iq_balancer->qavg = qavg;
+ }
+ 
+-static void adjust_phase(airspyhf_complex_float_t *iq, float phase)
++static void adjust_benchmark(airspyhf_complex_float_t *iq, float phase, float amplitude)
+ {
+ 	int i;
+ 	for (i = 0; i < FFTBins; i++)
+@@ -173,6 +173,9 @@ static void adjust_phase(airspyhf_complex_float_t *iq, float phase)
+ 
+ 		iq[i].re += phase * im;
+ 		iq[i].im += phase * re;
++
++		iq[i].re *= 1 + amplitude;
++		iq[i].im *= 1 - amplitude;
+ 	}
+ }
+ 
+@@ -189,13 +192,13 @@ static float fsign(const float x)
+ 	return x >= 0 ? 1.0f : -1.0f;
+ }
+ 
+-static float utility(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq, float phase)
++static float utility(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq, float phase, float amplitude)
+ {
+ 	airspyhf_complex_float_t fftPtr[FFTBins * sizeof(airspyhf_complex_float_t)];
+ 
+ 	memcpy(fftPtr, iq, FFTBins * sizeof(airspyhf_complex_float_t));
+ 
+-	adjust_phase(fftPtr, phase);
++	adjust_benchmark(fftPtr, phase, amplitude);
+ 
+ 	window(fftPtr, FFTBins);
+ 	fft(fftPtr, FFTBins);
+@@ -255,11 +258,14 @@ static float utility(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq, f
+ 	return acc1 * max1 * BoostFactor + acc2 * max2;
+ }
+ 
+-static void estimate_phase_imbalance(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq)
++static void estimate_imbalance(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq)
+ {
+-	float u = utility(iq_balancer, iq, iq_balancer->phase);
++	float old_phase = iq_balancer->phase;
++	float old_amplitude = iq_balancer->amplitude;
++
++	float u = utility(iq_balancer, iq, old_phase, old_amplitude);
+ 
+-	float phase = iq_balancer->phase + iq_balancer->step;
++	float phase = iq_balancer->phase + iq_balancer->phase_step;
+ 	if (phase > MaxPhaseCorrection)
+ 	{
+ 		phase = MaxPhaseCorrection;
+@@ -269,31 +275,53 @@ static void estimate_phase_imbalance(iq_balancer_t *iq_balancer, airspyhf_comple
+ 		phase = -MaxPhaseCorrection;
+ 	}
+ 
+-	float candidateUtility = utility(iq_balancer, iq, phase);
++	float candidate_utility = utility(iq_balancer, iq, phase, old_amplitude);
+ 
+-	if (candidateUtility < u)
++	if (candidate_utility < u)
+ 	{
+-		iq_balancer->fail = 0;
+-		iq_balancer->phase += PhaseAlpha * (phase - iq_balancer->phase);
+-		iq_balancer->step *= StepIncrement;
+-		if (fabsf(iq_balancer->step) > MaximumStep)
++		iq_balancer->phase = phase;
++		iq_balancer->phase_step *= StepIncrement;
++		if (fabsf(iq_balancer->phase_step) > MaximumPhaseStep)
+ 		{
+-			iq_balancer->step = MaximumStep * fsign(iq_balancer->step);
++			iq_balancer->phase_step = MaximumPhaseStep * fsign(iq_balancer->phase_step);
+ 		}
+ 	}
+ 	else
+ 	{
+-		if (++iq_balancer->fail > MaximumFail)
++		iq_balancer->phase_step *= -StepDecrement;
++		if (fabsf(iq_balancer->phase_step) < MinimumPhaseStep)
+ 		{
+-			iq_balancer->fail = 0;
+-			iq_balancer->step = -iq_balancer->step;
++			iq_balancer->phase_step = MinimumPhaseStep * fsign(iq_balancer->phase_step);
+ 		}
++	}
++
++	float amplitude = iq_balancer->amplitude + iq_balancer->amplitude_step;
++	if (amplitude > MaxAmplitudeCorrection)
++	{
++		amplitude = MaxAmplitudeCorrection;
++	}
++	else if (amplitude < -MaxAmplitudeCorrection)
++	{
++		amplitude = -MaxAmplitudeCorrection;
++	}
+ 
+-		iq_balancer->step *= StepDecrement;
++	candidate_utility = utility(iq_balancer, iq, old_phase, amplitude);
+ 
+-		if (fabsf(iq_balancer->step) < MinimumStep)
++	if (candidate_utility < u)
++	{
++		iq_balancer->amplitude = amplitude;
++		iq_balancer->amplitude_step *= StepIncrement;
++		if (fabsf(iq_balancer->amplitude_step) > MaximumAmplitudeStep)
++		{
++			iq_balancer->amplitude_step = MaximumAmplitudeStep * fsign(iq_balancer->amplitude_step);
++		}
++	}
++	else
++	{
++		iq_balancer->amplitude_step *= -StepDecrement;
++		if (fabsf(iq_balancer->amplitude_step) < MinimumAmplitudeStep)
+ 		{
+-			iq_balancer->step = MinimumStep * fsign(iq_balancer->step);
++			iq_balancer->amplitude_step = MinimumAmplitudeStep * fsign(iq_balancer->amplitude_step);
+ 		}
+ 	}
+ }
+@@ -305,46 +333,21 @@ static void adjust_phase_amplitude(iq_balancer_t *iq_balancer, airspyhf_complex_
+ 
+ 	for (i = 0; i < length; i++)
+ 	{
++		float phase = (i * iq_balancer->last_phase + (length - 1 - i) * iq_balancer->phase) * scale;
++		float amplitude = (i * iq_balancer->last_amplitude + (length - 1 - i) * iq_balancer->amplitude) * scale;
++
+ 		float re = iq[i].re;
+ 		float im = iq[i].im;
+ 
+-		float phase = (i * iq_balancer->last_phase + (length - 1 - i) * iq_balancer->phase) * scale;
+-
+ 		iq[i].re += phase * im;
+ 		iq[i].im += phase * re;
+ 
+-		re = iq[i].re * iq[i].re;
+-		im = iq[i].im * iq[i].im;
+-
+-		double idelta = iq[i].re * iq[i].re - iq_balancer->iampavg;
+-		iq_balancer->iampavg += (idelta > 0.0 ? BalanceAttackTimeConst : BalanceDecayTimeConst) * idelta;
+-
+-		double qdelta = iq[i].im * iq[i].im - iq_balancer->qampavg_pre;
+-		iq_balancer->qampavg_pre += (qdelta > 0.0 ? BalanceAttackTimeConst : BalanceDecayTimeConst) * qdelta;
+-
+-		if (iq_balancer->qampavg_pre != 0)
+-		{
+-			double gain = sqrt(iq_balancer->iampavg / iq_balancer->qampavg_pre);
+-			iq_balancer->gain = iq_balancer->gain + iq_balancer->gain_alpha * (gain - iq_balancer->gain);
+-		}
+-
+-		iq[i].im *= (float) iq_balancer->gain;
+-
+-		iq_balancer->qampavg_post += BalanceTimeConst * (iq[i].im * iq[i].im - iq_balancer->qampavg_post);
+-
+-		if (iq_balancer->qampavg_post != 0)
+-		{
+-			double gain_balance = sqrt(iq_balancer->iampavg / iq_balancer->qampavg_post);
+-			double alpha_contribution = AlphaContributionScale * fabs(1.0 - gain_balance);
+-			if (alpha_contribution < MinAlphaContribution)
+-				alpha_contribution = MinAlphaContribution;
+-			else if (alpha_contribution > MaxAlphaContribution)
+-				alpha_contribution = MaxAlphaContribution;
+-			iq_balancer->gain_alpha += BalanceTimeConst * (alpha_contribution - iq_balancer->gain_alpha);
+-		}
++		iq[i].re *= 1 + amplitude;
++		iq[i].im *= 1 - amplitude;
+ 	}
+ 
+ 	iq_balancer->last_phase = iq_balancer->phase;
++	iq_balancer->last_amplitude = iq_balancer->amplitude;
+ }
+ 
+ void iq_balancer_process(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* iq, int length)
+@@ -356,7 +359,7 @@ void iq_balancer_process(iq_balancer_t *iq_balancer, airspyhf_complex_float_t* i
+ 	{
+ 		if (++i == SkippedBuffers)
+ 		{
+-			estimate_phase_imbalance(iq_balancer, iq);
++			estimate_imbalance(iq_balancer, iq);
+ 			i = 0;
+ 		}
+ 		adjust_phase_amplitude(iq_balancer, iq, FFTBins);
+@@ -387,14 +390,11 @@ void iq_balancer_init(iq_balancer_t *iq_balancer)
+ 	iq_balancer->qavg = 0.0f;
+ 	iq_balancer->phase = 0.0f;
+ 	iq_balancer->last_phase = 0.0f;
+-	iq_balancer->step = MinimumStep;
++	iq_balancer->phase_step = MinimumPhaseStep;
++	iq_balancer->amplitude = 0.0f;
++	iq_balancer->last_amplitude = 0.0f;
++	iq_balancer->amplitude_step = MinimumAmplitudeStep;
+ 	iq_balancer->optimal_bin = 0;
+-	iq_balancer->fail = 0;
+-	iq_balancer->gain = 1.0;
+-	iq_balancer->gain_alpha = InitialGainAlpha;
+-	iq_balancer->iampavg = 0.0;
+-	iq_balancer->qampavg_pre = 0.0;
+-	iq_balancer->qampavg_post = 0.0;
+ 
+ 	__init_window();
+ }
+diff --git a/libairspyhf/src/iqbalancer.h b/libairspyhf/src/iqbalancer.h
+index da0ddcb..11f0402 100644
+--- a/libairspyhf/src/iqbalancer.h
++++ b/libairspyhf/src/iqbalancer.h
+@@ -25,40 +25,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
+ #include "airspyhf.h"
+ 
+ #define FFTBins 512
+-#define BinsToSkip 10
+-#define BinsToOptimize 20
+-#define BoostFactor 10000
++#define BinsToSkip 30
++#define BinsToOptimize 50
++#define BoostFactor 1000
+ #define SkippedBuffers 4
+-#define DcTimeConst 1e-5f
+-#define BalanceTimeConst 2.5e-6f
+-#define BalanceAttackTimeConst 1e-6f
+-#define BalanceDecayTimeConst 1e-8f
+-#define AlphaContributionScale 0.01f
+-#define MinAlphaContribution 1e-8f
+-#define MaxAlphaContribution 1e-3f
+-#define MaximumFail 10
+-#define MaximumStep 1e-2f
+-#define MinimumStep 1e-7f
+-#define StepIncrement 1.1f
+-#define StepDecrement 0.9f
++#define MaximumPhaseStep 1e-4f
++#define MinimumPhaseStep 1e-7f
++#define MaximumAmplitudeStep 1e-3f
++#define MinimumAmplitudeStep 1e-6f
++#define StepIncrement 1.01f
++#define StepDecrement (1.0f / StepIncrement)
+ #define MaxPhaseCorrection 0.2f
+-#define PhaseAlpha 0.01f
+-#define InitialGainAlpha 0.01f
++#define MaxAmplitudeCorrection 0.3f
++#define DcTimeConst 5e-5f
+ 
+ typedef struct _iq_balancer_t
+ {
+-	float iavg;
+-	float qavg;
+ 	float phase;
+ 	float last_phase;
+-	float step;
++	float phase_step;
++
++	float amplitude;
++	float last_amplitude;
++	float amplitude_step;
++
++	float iavg;
++	float qavg;
++
+ 	int optimal_bin;
+-	int fail;
+-	double gain;
+-	double gain_alpha;
+-	double iampavg;
+-	double qampavg_pre;
+-	double qampavg_post;
+ } iq_balancer_t;
+ 
+ void iq_balancer_init(iq_balancer_t *iq_balancer);
+-- 
+2.11.0
+

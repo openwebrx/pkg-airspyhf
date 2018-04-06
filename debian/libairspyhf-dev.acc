@@ -6,7 +6,7 @@ debian/libairspyhf-dev/usr/include/
 </headers>
 
 <libs>
-debian/libairspyhf0/usr/lib/
+debian/libairspyhf1/usr/lib/
 </libs>
 
 </descriptor>

@@ -1,21 +1,20 @@
 Source: airspyhf
 Section: libs
-Priority: extra
+Priority: optional
 Maintainer: A. Maitland Bottoms <bottoms@debian.org>
 Build-Depends: cmake,
                debhelper (>= 10.0~),
-	       dh-acc,
                libusb-1.0-0-dev [!kfreebsd-any],
                libusb2-dev [kfreebsd-any],
                pkg-config
-Standards-Version: 4.1.1
+Standards-Version: 4.1.4
 Homepage: http://airspy.com/airspy-hf-plus/
 
 Package: libairspyhf-dev
 Section: libdevel
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: libairspyhf0 (= ${binary:Version}), ${misc:Depends}
+Depends: libairspyhf1 (= ${binary:Version}), ${misc:Depends}
 Description: HF+VHF software defined radio receiver - development
  Airspy HF+ is an open source Software Defined Radio that can receive
  9 kHZ to 31 MHz and 60 MHz to 260 MHz.
@@ -23,7 +22,7 @@ Description: HF+VHF software defined radio receiver - development
  .
  This package contains development files.
 
-Package: libairspyhf0
+Package: libairspyhf1
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}

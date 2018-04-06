@@ -1,0 +1,11 @@
+--- a/libairspyhf/src/CMakeLists.txt
++++ b/libairspyhf/src/CMakeLists.txt
+@@ -49,7 +49,7 @@
+ # Dynamic library
+ add_library(airspyhf SHARED ${c_sources} ${AIRSPYHF_DLL_SRCS})
+ set_target_properties(airspyhf PROPERTIES VERSION ${AIRSPYHF_VER_MAJOR}.${AIRSPYHF_VER_MINOR}.${AIRSPYHF_VER_REVISION})
+-set_target_properties(airspyhf PROPERTIES SOVERSION 0)
++set_target_properties(airspyhf PROPERTIES SOVERSION 1)
+ 
+ # Static library
+ add_library(airspyhf-static STATIC ${c_sources})
