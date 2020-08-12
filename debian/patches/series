@@ -1,9 +1,2 @@
-0001-Set-the-device-s-minimum-LO-frequency-to-300-kHz.patch
-0002-Disabled-the-test-code.patch
-0003-Improved-the-image-rejection-near-DC.patch
-0004-Improved-the-envelope-detection-mechanism-in-the-IQ-.patch
-0005-New-amplitude-imbalance-estimation-method-Faster-Num.patch
-0006-Enter-the-game-changer-The-new-IQ-balancing-algorith.patch
-0007-Updated-the-IQ-correction-algorithm-with-the-latest-.patch
 bump-soversion
 libusb-freebsd

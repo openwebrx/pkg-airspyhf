@@ -1,0 +1,74 @@
+.TH "airspyhf_rx" 1 "2020.08.10" AIRSPYHF "User Commands"
+.SH NAME
+airspyhf_rx \- probe device and show configuration
+.SH DESCRIPTION
+The AirspyHF is a tiny and efficient software defined radio receiver.
+.LP
+This application lets the user probe the device and show configuration.
+.SH SYNOPSIS
+.B  airspy_rx
+.SH OPTIONS
+Usage:
+.TP
+\fB\-r\fR <filename>
+Receive data into the file;
+stdout emits values on standard output
+.TP
+\fB\-s\fR <serial number>
+Open device with specified 64bits serial number
+.TP
+\fB\-f\fR <frequency>
+Set frequency in MHz between 9 kHz \- 31 MHz or 60 \- 260 MHz
+.TP
+\fB\-a\fR <sample_rate>
+Set sample rate, at the moment only 768 kS/s supported
+.TP
+\fB\-n\fR <#samples>
+Number of samples to transfer (default is unlimited)
+.TP
+\fB\-d\fR
+Verbose mode
+.TP
+\fB\-w\fR
+Receive data into file with WAV header and automatic name
+This is for SDR# compatibility and may not work with other software
+It works even with HDSDR
+.TP
+\fB\-g\fR on|off
+HF AGC on / off
+.TP
+\fB\-l\fR high|low
+HF AGC threshold high / low (when AGC On)
+.TP
+\fB\-t\fR <value>
+HF attenuator value 0..8 (each step increases 6 dB the attenuation)
+.TP
+\fB\-m\fR on|off
+on to activate LNA (preamplifier): +6 dB gain \- compensated in digital.
+.TP
+\fB\-z\fR
+Do not attempt to use manual AGC/LNA commands
+(useful in order to avoid errors with old firmware)
+.PP
+.SH SEE ALSO
+AirspyHF web page:
+.B https://airspy.com/airspy-hf-plus
+.LP
+Other airspyhf programs:
+.sp
+airspyhf_rx(1), airspyhf_gpio(1), airspyhf_lib_version(1), airspyhf_rx(1)
+.SH AUTHOR
+This manual page was written by Maitland Bottoms
+for the Debian project (but may be used by others).
+.SH COPYRIGHT
+Copyright (c) 2020 A. Maitland Bottoms <bottoms@debian.org>
+.LP
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+.LP
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.

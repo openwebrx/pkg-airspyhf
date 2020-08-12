@@ -1,3 +1,10 @@
+airspyhf (1.6.8-1) unstable; urgency=medium
+
+  * New upstream release
+  * airspyhf package with command-line tools is new
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Tue, 11 Aug 2020 21:45:04 -0400
+
 airspyhf (1.1.5-1) unstable; urgency=medium
 
   * New upstream release

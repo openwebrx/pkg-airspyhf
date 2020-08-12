@@ -1,8 +1,8 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: airspyhf
-Upstream-Contact: info@airspy.com http://www.airspy.com/airspy-hf-plus
+Upstream-Contact: info@airspy.com https://www.airspy.com/airspy-hf-plus
 Source: https://github.com/airspy/airspyhf.git
- git archive --format=tar --prefix=airspyhf-1.0/ 1.0 | xz > ../../airspyhf_1.0.orig.tar.xz
+ git archive --format=tar --prefix=airspyhf-1.6.8/ 1.6.8 | xz > ../../airspyhf_1.6.8.orig.tar.xz
 Comment:
  Debian packages by A. Maitland Bottoms
  .
@@ -13,7 +13,7 @@ Copyright: Copyright (c) 2017, Airspy
 License: AirSpy-BSD
 
 Files: *
-Copyright: 2017 Airspy
+Copyright: 2017-2020 Airspy
 License: AirSpy-BSD
 
 Files: libairspyhf/src/*
@@ -37,7 +37,11 @@ Copyright: 2006, 2008  Laurent Montel <montel@kde.org>
 License: AirSpy-BSD
 
 Files: debian/*
-Copyright: 2017 A. Maitland Bottoms <bottoms@debian.org>
+Copyright: 2017-2020 A. Maitland Bottoms <bottoms@debian.org>
+License: Airspy-BSD
+
+Files: debian/*.1
+Copyright: 2017-2020 A. Maitland Bottoms <bottoms@debian.org>
 License: GPL-2+
 
 Files: libairspyhf/CMakeLists.txt tools/CMakeLists.txt
@@ -45,6 +49,31 @@ Copyright: 2012 Jared Boone
            2013,2014 Benjamin Vernoux
 Comment: This file is part of AirSpy (based on HackRF project).
          Based heavily upon the libftdi cmake setup.
+License: GPL-2+
+
+Files: tools/airspyhf_calibrate.c
+Copyright: 2012 Jared Boone <jared@sharebrained.com>
+           2013 Michael Ossmann <mike@ossmann.com>
+           2013/2014 Benjamin Vernoux <bvernoux@airspy.com>
+           2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
+           2020 Kenji Rikitake JJ1BDX <kenji.rikitake@acm.org>
+License: GPL-2+
+
+Files: tools/airspyhf_gpio.c tools/airspyhf_lib_version.c
+Copyright: 2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
+License: GPL-2+
+
+Files: tools/airspyhf_info.c
+Copyright: 2012 Jared Boone <jared@sharebrained.com>
+           2013 Michael Ossmann <mike@ossmann.com>
+           2013/2014 Benjamin Vernoux <bvernoux@airspy.com>
+           2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
+License: GPL-2+
+
+Files: tools/airspyhf_rx.c
+Copyright: 2012 Jared Boone <jared@sharebrained.com>
+           2014-2015 Benjamin Vernoux <bvernoux@airspy.com>
+           2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
 License: GPL-2+
 
 License: GPL-2+

@@ -1,0 +1,5 @@
+debian/airspyhf_calibrate.1
+debian/airspyhf_gpio.1
+debian/airspyhf_info.1
+debian/airspyhf_lib_version.1
+debian/airspyhf_rx.1
