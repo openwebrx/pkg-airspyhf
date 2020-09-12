@@ -1,3 +1,9 @@
+airspyhf (1.6.8-3) UNRELEASED; urgency=low
+
+  * Trim trailing whitespace.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 12 Sep 2020 02:05:29 -0000
+
 airspyhf (1.6.8-2) unstable; urgency=medium
 
   * source only upload to unstable to allow transition
@@ -26,4 +32,3 @@ airspyhf (1.0-1) unstable; urgency=medium
   * New release (Closes: #882184)
 
  -- A. Maitland Bottoms <bottoms@debian.org>  Sun, 19 Nov 2017 16:12:17 -0500
-
