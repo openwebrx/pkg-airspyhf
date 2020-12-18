@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
-  <id>com.airspy.airspy-hf-plus</id>
+  <id>com.airspy.airspyhf</id>
   <metadata_license>Airspy-BSD</metadata_license>
+  <project_license>GPL-2+</project_license>
   <name>airspyhf</name>
   <summary>Control of Airspy HF+ radio receiver</summary>
   <description>

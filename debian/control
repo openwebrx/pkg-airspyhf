@@ -4,11 +4,12 @@ Priority: optional
 Maintainer: Debian Hamradio Maintainers <debian-hams@lists.debian.org>
 Uploaders: A. Maitland Bottoms <bottoms@debian.org>
 Build-Depends: cmake,
-               debhelper-compat (= 12),
+               debhelper-compat (= 13),
                libusb-1.0-0-dev [!kfreebsd-any],
                libusb2-dev [kfreebsd-any],
                pkg-config
-Standards-Version: 4.5.0
+Standards-Version: 4.5.1
+Rules-Requires-Root: no
 Homepage: https://airspy.com/airspy-hf-plus
 Vcs-Browser: https://salsa.debian.org/debian-hamradio-team/airspyhf
 Vcs-Git: https://salsa.debian.org/debian-hamradio-team/airspyhf.git
@@ -18,7 +19,7 @@ Section: comm
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, libairspyhf1 (= ${binary:Version}), ${misc:Depends}
-Description: HF+VHF software defined radio receiver - development
+Description: HF+VHF software defined radio receiver - user runtime
  Airspy HF+ is an open source Software Defined Radio that can receive
  9 kHZ to 31 MHz and 60 MHz to 260 MHz.
  It is a High Speed USB device powered by the USB bus.
@@ -44,6 +45,7 @@ Description: HF+VHF software defined radio receiver - development
  This package contains development files.
 
 Package: libairspyhf1
+Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}

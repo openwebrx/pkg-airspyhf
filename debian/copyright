@@ -51,7 +51,7 @@ Comment: This file is part of AirSpy (based on HackRF project).
          Based heavily upon the libftdi cmake setup.
 License: GPL-2+
 
-Files: tools/airspyhf_calibrate.c
+Files: tools/src/airspyhf_calibrate.c
 Copyright: 2012 Jared Boone <jared@sharebrained.com>
            2013 Michael Ossmann <mike@ossmann.com>
            2013/2014 Benjamin Vernoux <bvernoux@airspy.com>
@@ -59,18 +59,18 @@ Copyright: 2012 Jared Boone <jared@sharebrained.com>
            2020 Kenji Rikitake JJ1BDX <kenji.rikitake@acm.org>
 License: GPL-2+
 
-Files: tools/airspyhf_gpio.c tools/airspyhf_lib_version.c
+Files: tools/src/airspyhf_gpio.c tools/src/airspyhf_lib_version.c
 Copyright: 2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
 License: GPL-2+
 
-Files: tools/airspyhf_info.c
+Files: tools/src/airspyhf_info.c
 Copyright: 2012 Jared Boone <jared@sharebrained.com>
            2013 Michael Ossmann <mike@ossmann.com>
            2013/2014 Benjamin Vernoux <bvernoux@airspy.com>
            2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>
 License: GPL-2+
 
-Files: tools/airspyhf_rx.c
+Files: tools/src/airspyhf_rx.c
 Copyright: 2012 Jared Boone <jared@sharebrained.com>
            2014-2015 Benjamin Vernoux <bvernoux@airspy.com>
            2018 Andrea Montefusco IW0HDV <andrew@montefusco.com>

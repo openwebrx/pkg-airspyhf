@@ -1,12 +1,18 @@
-airspyhf (1.6.8-3) UNRELEASED; urgency=low
+airspyhf (1.6.8-3) unstable; urgency=medium
 
+  [ Debian Janitor ]
   * Trim trailing whitespace.
   * debian/copyright: use spaces rather than tabs to start continuation lines.
   * Set debhelper-compat version in Build-Depends.
   * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
     Repository-Browse.
 
- -- Debian Janitor <janitor@jelmer.uk>  Sat, 12 Sep 2020 02:05:29 -0000
+  [ A. Maitland Bottoms ]
+  * Thanks to the Debian Janitor for above packaging improvements
+  * update Standards-Version (no changes)
+  * move udev entry to libairsppyhf1
+
+ -- A. Maitland Bottoms <bottoms@debian.org>  Thu, 17 Dec 2020 20:01:46 -0500
 
 airspyhf (1.6.8-2) unstable; urgency=medium
 
