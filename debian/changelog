@@ -1,3 +1,9 @@
+airspyhf (1.6.8-3+owrx1) UNRELEASED; urgency=low
+
+  * Restore vendor udev rules
+
+ -- Jakob Ketterl <jakob.ketterl@gmx.de>  Thu, 28 Dec 2023 10:12:00 +0000
+
 airspyhf (1.6.8-3) unstable; urgency=medium
 
   [ Debian Janitor ]
